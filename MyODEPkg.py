@@ -102,18 +102,16 @@ def EulerSolve(SysDiff,t0, y0, dt):
     return ynew
         
 def ModifiedEulerSolve(diffFunc,t, initcond, deltaT):
-    def name():
-        return "ModifiedEulerSolve"
-    global AbsTol
-    global RelTol
-    FullStep = initcond + diffFunc(t,initcond)*deltaT
-    ym = initcond + 0.5*deltaT*diffFunc(t,initcond)
-    tm = t+0.5*deltaT
-    y2 = initcond + diffFunc(tm,ym)*deltaT
-    abs_error = np.sum(y2*y2)-np.sum(FullStep*FullStep)
-    rel_error = abs_error/np.sum(FullStep*FullStep)
-    FullStep = y2
-    while rel_error > RelTol or abs_error > RelTol:
+    global AbsTol               # Controls Absolute Error Break
+    global RelTol               # Control Relative Error Break
+    FullStep = initcond + diffFunc(t,initcond)*deltaT # First Step Approxiation
+    ym = initcond + 0.5*deltaT*diffFunc(t,initcond)   # mean value calculation
+    tm = t+0.5*deltaT                                 # midpoint time
+    y2 = initcond + diffFunc(tm,ym)*deltaT            # second step Approximation
+    abs_error = np.sum(y2*y2)-np.sum(FullStep*FullStep)# error calculation
+    rel_error = abs_error/np.sum(FullStep*FullStep)     # error calculation
+    FullStep = y2                                       # setting looping previous value to compare
+    while rel_error > RelTol or abs_error > RelTol:     # loop
         ym = initcond + 0.5*deltaT*diffFunc(t,initcond)
         y2 = initcond + diffFunc(tm,ym)*deltaT
         abs_error = np.sqrt(np.sum(y2*y2)-np.sum(FullStep*FullStep))
