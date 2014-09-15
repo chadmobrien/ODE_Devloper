@@ -107,16 +107,17 @@ def ModifiedEulerSolve(diffFunc,t, initcond, deltaT):
     global AbsTol
     global RelTol
     FullStep = initcond + diffFunc(t,initcond)*deltaT
-    ym = (FullStep + initcond)/2.
-    y2 = initcond + diffFunc(t,ym)*deltaT
+    ym = initcond + 0.5*deltaT*diffFunc(t,initcond)
+    tm = t+0.5*deltaT
+    y2 = initcond + diffFunc(tm,ym)*deltaT
     abs_error = np.sum(y2*y2)-np.sum(FullStep*FullStep)
     rel_error = abs_error/np.sum(FullStep*FullStep)
     FullStep = y2
     while rel_error > RelTol or abs_error > RelTol:
-        ym = (y2 + initcond)/2.
-        y2 = initcond + deltaT*diffFunc(t,ym)
-        abs_error = np.sum(y2*y2)-np.sum(FullStep*FullStep)
-        rel_error = abs_error/np.sum(FullStep*FullStep)
+        ym = initcond + 0.5*deltaT*diffFunc(t,initcond)
+        y2 = initcond + diffFunc(tm,ym)*deltaT
+        abs_error = np.sqrt(np.sum(y2*y2)-np.sum(FullStep*FullStep))
+        rel_error = abs_error/np.sqrt(np.sum(FullStep*FullStep))
         FullStep = y2
     return y2
      
@@ -138,7 +139,7 @@ def CheckEvents(EventFunc, T,Y, c_iter):
     for index in range(0,ubound):
         # Check if Zero is Detected
         if not (value_n[index] == value_nm1[index]):
-            if value_n[index] < 1e-150 and value_n[index]> -(1e-150):
+            if np.allclose(abs(value_n[index]),0.0):
                 flag = isterminal[index] # checks if event stops sim
                 EventOccurs = True
                 break
