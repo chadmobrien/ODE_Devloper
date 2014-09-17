@@ -120,6 +120,39 @@ def ModifiedEulerSolve(diffFunc,t, initcond, deltaT):
     return y2
      
 def CheckEvents(EventFunc, T,Y, c_iter):
+    '''
+    CheckEvents - Used to determine when an EventFunction "VALUE" reaches zero.
+                  This is only accessed if used provides event function in the_
+                  ODE call in the **Opt saying EVENTS=definition.
+    --------
+    Inputs:
+        EventFunc : User defined definition with inputs that uses T and Y at _
+                    At current time step to determine if the VALUE array has _
+                    Elements = 0.
+                    
+                    This Function needs to Return a tuple of:
+                        VALUE     - An array that contains zero based events.
+                        DIRECTION - an array that is the same size of value_
+                                    containing -1,0, or 1 for indication of _
+                                    function decreasing, either increasing or_
+                                    decreasing, or increasing only.
+                        ISTERMINAL- An array, same size as VALUE, that returns_
+                                    True or False that the event VALUE stops _
+                                    the simulation.
+                T: The time vector solution up to and including current step.
+                Y: The solution vector up to and including the current step.
+           c_iter: The current time step. Could be gotten dynamically from T _
+                   and Y. However currently requires input.
+    ---------
+    Outputs:
+        EventOccurs : Returns Boolean if an Event has Occured. This is used in_
+                      The primary loop to store the step solution as an event _
+                      in YE, TE, IE. IE is the array containing the iterations_
+                      calcuations determined as an event.
+               flag : Returns boolean true or false to stop current simulation_
+                       True - Stop
+                       False - Continue Simulation
+    '''
     EventOccurs = False
     flag = False
     # YM1 is the previous time step solution
